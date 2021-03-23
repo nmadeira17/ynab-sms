@@ -14,6 +14,7 @@ public static class Runner
             return;
         }
 
-        Console.WriteLine(budgetConfig.ToJson());
+        Console.WriteLine(String.Format("AppConfig:\n{0}", appConfig.ToJson()));
+        Console.WriteLine(String.Format("BudgetConfig:\n{0}", budgetConfig.ToJson()));
     }
 }
