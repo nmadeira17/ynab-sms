@@ -35,7 +35,7 @@ public class BudgetItemsConfig : IBudgetConfigEntry
         }
         catch(Exception e)
         {
-            Console.WriteLine(String.Format("Failed to read budget_items.json. Error: %s", e));
+            Console.WriteLine(String.Format("Failed to read budget_items.json. Error:\n{0}", e));
             return null;
         }
 
@@ -45,7 +45,14 @@ public class BudgetItemsConfig : IBudgetConfigEntry
         }
         catch(Exception e)
         {
-            Console.WriteLine(String.Format("Failed to deserialize budget_items.json. Error: %s", e));
+            Console.WriteLine(String.Format("Failed to deserialize budget_items.json.\nError: {0}", e));
+            return null;
+        }
+
+        string errorMessage = "";
+        if (!config.IsValid(out errorMessage))
+        {
+            Console.WriteLine(String.Format("budget_items.json is invalid. {0}", errorMessage));
             return null;
         }
 
