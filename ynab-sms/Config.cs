@@ -5,17 +5,109 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 
 /// <summary>
-/// Common functionality for all entries in budget_items.json
+/// Common functionality for entries in all config files
 /// </summary>
-public interface IBudgetConfigEntry
+public interface IConfigEntry
 {
     bool IsValid(out string errorMessage);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// App Config
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+public class AppConfig : IConfigEntry
+{
+    [JsonPropertyName("access_token")]
+    public string AccessToken { get; set; }
+
+    [JsonPropertyName("budget_items_json_file")]
+    public string BudgetItemsJsonFile { get; set; }
+
+    /// <summary>
+    /// Initialize from the path to the app config json file
+    /// </summary>
+    public static AppConfig CreateFromJsonFile(string jsonFile)
+    {
+        string jsonString = "";
+        AppConfig appConfig = null;
+
+        try
+        {
+            jsonString = File.ReadAllText(jsonFile);
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(String.Format("Failed to read config.json. Error:\n{0}", e));
+            return null;
+        }
+
+        try
+        {
+            appConfig = JsonSerializer.Deserialize<AppConfig>(jsonString);
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(String.Format("Failed to deserialize config.json.\nError: {0}", e));
+            return null;
+        }
+
+        string errorMessage = "";
+        if (!appConfig.IsValid(out errorMessage))
+        {
+            Console.WriteLine(String.Format("config.json is invalid. {0}", errorMessage));
+            return null;
+        }
+
+        return appConfig;
+    }
+
+    /// <summary>
+    /// Write the object to a JSON string
+    /// </summary>
+    public string ToJson(bool prettyPrint = false)
+    {
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = prettyPrint,
+        };
+
+        return JsonSerializer.Serialize<AppConfig>(this, options);
+    }
+
+    /// <summary>
+    /// Is this object a structurall valid object
+    /// </summary>
+    public bool IsValid(out string errorMessage)
+    {
+        if (AccessToken.Length == 0)
+        {
+            errorMessage = "AccessToken must be present.";
+            return false;
+        }
+
+        if (BudgetItemsJsonFile.Length == 0)
+        {
+            errorMessage = "Path to budget items json file must be present.";
+            return false;
+        }
+
+        errorMessage = "NoError";
+        return true;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// BudgetItemsConfig
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// <summary>
 /// Representst the entirety of the budget_items.json file
 /// </summary>
-public class BudgetItemsConfig : IBudgetConfigEntry
+public class BudgetItemsConfig : IConfigEntry
 {
     [JsonPropertyName("entries")]
     public IList<EntryConfig> Entries { get; set; }
@@ -98,7 +190,7 @@ public class BudgetItemsConfig : IBudgetConfigEntry
 /// Details for a single entry in the config.
 /// The phone number to send an SMS to and the list of budgets they care about
 /// </summary>
-public class EntryConfig : IBudgetConfigEntry
+public class EntryConfig : IConfigEntry
 {
     [JsonPropertyName("phone_number")]
     public string PhoneNumber { get; set; }
@@ -137,7 +229,7 @@ public class EntryConfig : IBudgetConfigEntry
 /// <summary>
 /// Specifies a budget and the items in the budget to care about
 /// </summary>
-public class BudgetConfig : IBudgetConfigEntry
+public class BudgetConfig : IConfigEntry
 {
     [JsonPropertyName("id")]
     public string Id { get; set; }
@@ -176,7 +268,7 @@ public class BudgetConfig : IBudgetConfigEntry
 /// <summary>
 /// Specifies a single category and line item to process
 /// </summary>
-public class BudgetItemConfig : IBudgetConfigEntry
+public class BudgetItemConfig : IConfigEntry
 {
     [JsonPropertyName("category")]
     public string Category { get; set; }
