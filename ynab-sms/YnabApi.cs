@@ -98,7 +98,7 @@ namespace Ynab_Sms
                 sb.AppendLine(String.Format("{0} | {1} Categories", group.Name, group.Categories.Count));
 
                 foreach (Category category in group.Categories)
-                    sb.AppendLine(String.Format("\t-{0} | {1}", category.Name, Utils.YnabLongToFormattedString(category.Remaining)));
+                    sb.AppendLine(String.Format("\t-{0} | {1}", category.Name, Utils.YnabLongToFormattedString(category.Balance)));
             }
 
             return sb.ToString();
@@ -146,16 +146,16 @@ namespace Ynab_Sms
 
         public long Budgeted { get; private set; }
         public long Activity { get; private set; }
-        public long Remaining { get; private set; }
+        public long Balance { get; private set; }
 
-        public Category(string name, Guid id, Guid categoryGroupId, long budgeted, long activity, long remaining)
+        public Category(string name, Guid id, Guid categoryGroupId, long budgeted, long activity, long balance)
         {
             Name = name;
             Id = id;
             CategoryGroupId = categoryGroupId;
             Budgeted = budgeted;
             Activity = activity;
-            Remaining = remaining;
+            Balance = balance;
         }
     }
 }
