@@ -18,17 +18,16 @@ namespace Ynab_Sms
                 return;
 
             IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetItemsConfig.GetBudgetIds());
-            MessageContent messageContent = MessageContent.Create(budgetItemsConfig, budgetDetails);
+            MessageContentManager messageContentManager = MessageContentManager.Create(budgetItemsConfig, budgetDetails);
 
             CommandLineMessegeSender commandLineMessageSender = new CommandLineMessegeSender();
             SmsMessageSender smsMessageSender = new SmsMessageSender(appConfig.TwilioSid, appConfig.TwilioAuthToken, appConfig.TwilioPhoneNumber);
             if (!smsMessageSender.Init())
                 return;
 
-            foreach (string phoneNumber in messageContent.GetPhoneNumbers())
+            foreach (string phoneNumber in messageContentManager.GetPhoneNumbers())
             {
-                string message = messageContent.GetMessageForPhoneNumber(phoneNumber);
-
+                string message = messageContentManager.GetMessageForPhoneNumber(phoneNumber);
                 commandLineMessageSender.Send(phoneNumber, message);
                 smsMessageSender.Send(phoneNumber, message);
             }

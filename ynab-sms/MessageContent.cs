@@ -4,17 +4,17 @@ using System.Text;
 
 namespace Ynab_Sms
 {
-    public class MessageContent
+    public class MessageContentManager
     {
         // Maps phone numbers to a collection of strings to send to said phone number
         private Dictionary<string, ICollection<string>> m_dict;
 
-        public MessageContent(Dictionary<string, ICollection<string>> dict)
+        public MessageContentManager(Dictionary<string, ICollection<string>> dict)
         {
             m_dict = dict;
         }
 
-        public static MessageContent Create(BudgetItemsConfig budgetItemsConfig, IEnumerable<BudgetDetails> budgetDetails)
+        public static MessageContentManager Create(BudgetItemsConfig budgetItemsConfig, IEnumerable<BudgetDetails> budgetDetails)
         {
             Dictionary<string, ICollection<string>> dict = new Dictionary<string, ICollection<string>>();
 
@@ -43,7 +43,7 @@ namespace Ynab_Sms
                 }
             }
 
-            return new MessageContent(dict);
+            return new MessageContentManager(dict);
         }
 
         public ICollection<string> GetPhoneNumbers()
