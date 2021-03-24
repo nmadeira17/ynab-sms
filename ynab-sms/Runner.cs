@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ynab_Sms
 {
@@ -16,8 +18,11 @@ namespace Ynab_Sms
                 return;
             }
 
-            Console.WriteLine(String.Format("AppConfig:\n{0}", appConfig.ToJson()));
-            Console.WriteLine(String.Format("BudgetConfig:\n{0}", budgetConfig.ToJson()));
+            IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetConfig.GetBudgetIds());
+            foreach (BudgetDetails budgetDetail in budgetDetails)
+            {
+                Console.WriteLine("\n" + budgetDetail.ToString());
+            }
         }
     }
 }
