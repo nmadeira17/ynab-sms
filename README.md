@@ -7,25 +7,28 @@ Send SMS notifications when you reach spending limits.
 ## App Config JSON Format
     {
         "access_token" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        "budget_items_json_file" : "path/to/budget_items.json"
+        "budget_config_json_file" : "path/to/budget_config.json",
+        "twilio_sid" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "twilio_auth_token" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "twilio_phone_number" : "+15555551234"
     }
 
 ## Budget Items JSON Format
     {
-        "entries" : [
+        "users" : [
             {
                 "phone_number" : "5555551234",
                 "budgets" : [
                     {
                         "id" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-                        "budget_items" : [
+                        "budget_config" : [
                             {
+                                "category_group" : "..."
                                 "category" : "..."
-                                "line_item" : "..."
                             },
                             {
-                                "category" : "...",
-                                "line_item" : "..."
+                                "category_group" : "...",
+                                "category" : "..."
                             }
                         ]
                     }

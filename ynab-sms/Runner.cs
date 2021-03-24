@@ -14,12 +14,12 @@ namespace Ynab_Sms
             if (appConfig == null)
                 return;
 
-            BudgetItemsConfig budgetItemsConfig = BudgetItemsConfig.CreateFromJson(appConfig.BudgetItemsJsonFile);
-            if (budgetItemsConfig == null)
+            BudgetConfigFile budgetConfigFile = BudgetConfigFile.CreateFromJson(appConfig.BudgetConfigJsonFile);
+            if (budgetConfigFile == null)
                 return;
 
-            IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetItemsConfig.GetBudgetIds());
-            MessageContentManager messageContentManager = MessageContentManager.Create(budgetItemsConfig, budgetDetails);
+            IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetConfigFile.GetBudgetIds());
+            MessageContentManager messageContentManager = MessageContentManager.Create(budgetConfigFile, budgetDetails);
 
             CommandLineMessegeSender commandLineMessageSender = new CommandLineMessegeSender();
             SmsMessageSender smsMessageSender = new SmsMessageSender(appConfig.TwilioSid, appConfig.TwilioAuthToken, appConfig.TwilioPhoneNumber);

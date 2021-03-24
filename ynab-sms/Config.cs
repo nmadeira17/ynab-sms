@@ -26,8 +26,8 @@ namespace Ynab_Sms
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [JsonPropertyName("budget_items_json_file")]
-        public string BudgetItemsJsonFile { get; set; }
+        [JsonPropertyName("budget_config_json_file")]
+        public string BudgetConfigJsonFile { get; set; }
 
         [JsonPropertyName("twilio_sid")]
         public string TwilioSid { get; set; }
@@ -104,7 +104,7 @@ namespace Ynab_Sms
                 return false;
             }
 
-            if (BudgetItemsJsonFile.Length == 0)
+            if (BudgetConfigJsonFile.Length == 0)
             {
                 errorMessage = "Path to budget items json file must be present.";
                 return false;
@@ -135,28 +135,28 @@ namespace Ynab_Sms
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // BudgetItemsConfig
+    // BudgetConfigFile
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Representst the entirety of the budget_items.json file
+    /// Representst the entirety of the budget_config.json file
     /// </summary>
-    public class BudgetItemsConfig : IConfigEntry
+    public class BudgetConfigFile : IConfigEntry
     {
-        [JsonPropertyName("entries")]
-        public IList<EntryConfig> Entries { get; set; }
+        [JsonPropertyName("users")]
+        public IList<UserConfig> UserConfigs { get; set; }
 
         /// <summary>
-        /// Initialize an instance of BudgetItemsConfig from a JSON file
+        /// Initialize an instance of BudgetConfigFile from a JSON file
         /// </summary>
         /// <param name="jsonFile">The path to the input JSON file</param>
-        public static BudgetItemsConfig CreateFromJson(string jsonFile)
+        public static BudgetConfigFile CreateFromJson(string jsonFile)
         {
             string jsonString = "";
-            BudgetItemsConfig config = null;
+            BudgetConfigFile config = null;
 
-            Logger.Log("Parsing budget_items.json...", LoggingLevel.Verbose);
+            Logger.Log("Parsing budget_config.json...", LoggingLevel.Verbose);
 
             try
             {
@@ -164,24 +164,24 @@ namespace Ynab_Sms
             }
             catch(Exception e)
             {
-                Logger.Log(String.Format("Failed to read budget_items.json. Error:\n{0}", e));
+                Logger.Log(String.Format("Failed to read budget_config.json. Error:\n{0}", e));
                 return null;
             }
 
             try
             {
-                config = JsonSerializer.Deserialize<BudgetItemsConfig>(jsonString);
+                config = JsonSerializer.Deserialize<BudgetConfigFile>(jsonString);
             }
             catch(Exception e)
             {
-                Logger.Log(String.Format("Failed to deserialize budget_items.json.\nError: {0}", e));
+                Logger.Log(String.Format("Failed to deserialize budget_config.json.\nError: {0}", e));
                 return null;
             }
 
             string errorMessage = "";
             if (!config.IsValid(out errorMessage))
             {
-                Logger.Log(String.Format("budget_items.json is invalid. {0}", errorMessage));
+                Logger.Log(String.Format("budget_config.json is invalid. {0}", errorMessage));
                 return null;
             }
 
@@ -196,9 +196,9 @@ namespace Ynab_Sms
         public IEnumerable<string> GetBudgetIds()
         {
             HashSet<string> budgetIds = new HashSet<string>();
-            foreach (EntryConfig entryConfig in Entries)
+            foreach (UserConfig userConfig in UserConfigs)
             {
-                foreach (BudgetConfig budgetConfig in entryConfig.Budgets)
+                foreach (BudgetConfig budgetConfig in userConfig.BudgetConfigs)
                 {
                     budgetIds.Add(budgetConfig.Id);
                 }
@@ -214,9 +214,9 @@ namespace Ynab_Sms
         {
             IList<string> phoneNumbersThatCare = new List<string>();
 
-            foreach (EntryConfig entryConfig in Entries)
+            foreach (UserConfig userConfig in UserConfigs)
             {
-                string phoneNumber = entryConfig.GetPhoneNumberIfRegisteredForBudgetItem(budgetId, categoryGroupName, categoryName);
+                string phoneNumber = userConfig.GetPhoneNumberIfRegisteredForBudgetItem(budgetId, categoryGroupName, categoryName);
                 if (phoneNumber == null)
                     continue;
                 
@@ -236,7 +236,7 @@ namespace Ynab_Sms
                 WriteIndented = prettyPrint,
             };
 
-            return JsonSerializer.Serialize<BudgetItemsConfig>(this, options);
+            return JsonSerializer.Serialize<BudgetConfigFile>(this, options);
         }
 
         /// <summary>
@@ -244,15 +244,15 @@ namespace Ynab_Sms
         /// </summary>
         public bool IsValid(out string errorMessage)
         {
-            if (Entries.Count == 0)
+            if (UserConfigs.Count == 0)
             {
-                errorMessage = "Entries list is empty.";
+                errorMessage = "UserConfigs list is empty.";
                 return false;
             }
 
-            foreach (EntryConfig entry in Entries)
+            foreach (UserConfig userConfig in UserConfigs)
             {
-                if (!entry.IsValid(out errorMessage))
+                if (!userConfig.IsValid(out errorMessage))
                     return false;
             }
 
@@ -262,20 +262,20 @@ namespace Ynab_Sms
     }
 
     /// <summary>
-    /// Details for a single entry in the config.
+    /// Details for a single user in the config file
     /// The phone number to send an SMS to and the list of budgets they care about
     /// </summary>
-    public class EntryConfig : IConfigEntry
+    public class UserConfig : IConfigEntry
     {
         [JsonPropertyName("phone_number")]
         public string PhoneNumber { get; set; }
 
         [JsonPropertyName("budgets")]
-        public IList<BudgetConfig> Budgets { get; set; }
+        public IList<BudgetConfig> BudgetConfigs { get; set; }
 
         public string GetPhoneNumberIfRegisteredForBudgetItem(Guid budgetId, string categoryGroupName, string categoryName)
         {
-            foreach (BudgetConfig budgetConfig in Budgets)
+            foreach (BudgetConfig budgetConfig in BudgetConfigs)
             {
                 if (budgetConfig.ContainsEntry(budgetId, categoryGroupName, categoryName))
                     return PhoneNumber;
@@ -295,13 +295,13 @@ namespace Ynab_Sms
                 return false;
             }
 
-            if (Budgets.Count == 0)
+            if (BudgetConfigs.Count == 0)
             {
-                errorMessage = "Budgets list is empty";
+                errorMessage = "BudgetConfigs list is empty";
                 return false;
             }
 
-            foreach (BudgetConfig budgetConfig in Budgets)
+            foreach (BudgetConfig budgetConfig in BudgetConfigs)
             {
                 if (!budgetConfig.IsValid(out errorMessage))
                     return false;
@@ -321,16 +321,16 @@ namespace Ynab_Sms
         public string Id { get; set; }
 
         [JsonPropertyName("budget_items")]
-        public IList<BudgetItemConfig> BudgetItems { get; set; }
+        public IList<BudgetCategoryConfig> BudgetCategoryConfigs { get; set; }
 
         public bool ContainsEntry(Guid budgetId, string categoryGroupName, string categoryName)
         {
             if (budgetId.ToString() != Id)
                 return false;
 
-            foreach (BudgetItemConfig budgetItemConfig in BudgetItems)
+            foreach (BudgetCategoryConfig budgetCategoryConfig in BudgetCategoryConfigs)
             {
-                if (budgetItemConfig.IsEqual(categoryGroupName, categoryName))
+                if (budgetCategoryConfig.IsEqual(categoryGroupName, categoryName))
                     return true;
             }
 
@@ -348,15 +348,15 @@ namespace Ynab_Sms
                 return false;
             }
 
-            if (BudgetItems.Count == 0)
+            if (BudgetCategoryConfigs.Count == 0)
             {
                 errorMessage = "Budget items list is empty";
                 return false;
             }
 
-            foreach (BudgetItemConfig budgetItemConfig in BudgetItems)
+            foreach (BudgetCategoryConfig budgetCategoryConfig in BudgetCategoryConfigs)
             {
-                if (!budgetItemConfig.IsValid(out errorMessage))
+                if (!budgetCategoryConfig.IsValid(out errorMessage))
                     return false;
             }
 
@@ -366,19 +366,19 @@ namespace Ynab_Sms
     }
 
     /// <summary>
-    /// Specifies a single category and line item to process
+    /// Specifies a single category group and category
     /// </summary>
-    public class BudgetItemConfig : IConfigEntry
+    public class BudgetCategoryConfig : IConfigEntry
     {
+        [JsonPropertyName("category_group")]
+        public string CategoryGroup { get; set; }
+
         [JsonPropertyName("category")]
         public string Category { get; set; }
 
-        [JsonPropertyName("line_item")]
-        public string LineItem { get; set; }
-
         public bool IsEqual(string categoryGroupName, string categoryName)
         {
-            if (categoryGroupName == Category && categoryName == LineItem)
+            if (categoryGroupName == CategoryGroup && categoryName == Category)
                 return true;
 
             return false;
@@ -389,15 +389,15 @@ namespace Ynab_Sms
         /// </summary>
         public bool IsValid(out string errorMessage)
         {
-            if (Category.Length == 0)
+            if (CategoryGroup.Length == 0)
             {
-                errorMessage = "Category must be specified.";
+                errorMessage = "CategoryGroup must be specified.";
                 return false;
             }
 
-            if (LineItem.Length == 0)
+            if (Category.Length == 0)
             {
-                errorMessage = "LineItem must be specified.";
+                errorMessage = "Category must be specified.";
                 return false;
             }
 

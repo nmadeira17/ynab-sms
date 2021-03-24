@@ -31,7 +31,7 @@ namespace Ynab_Sms
                     Logger.Log(String.Format("Error getting budget details for budget ID [{0}]. Are you sure this is the correct ID?", budgetId));
                     continue;
                 }
-                
+
                 BudgetDetails budgetDetails = BudgetDetails.Create(budgetResponse);
                 Logger.Log(String.Format("\n{0}", budgetDetails.ToString()), LoggingLevel.Verbose);
 

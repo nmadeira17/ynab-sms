@@ -14,7 +14,7 @@ namespace Ynab_Sms
             m_dict = dict;
         }
 
-        public static MessageContentManager Create(BudgetItemsConfig budgetItemsConfig, IEnumerable<BudgetDetails> budgetDetails)
+        public static MessageContentManager Create(BudgetConfigFile budgetConfigFile, IEnumerable<BudgetDetails> budgetDetails)
         {
             Dictionary<string, ICollection<string>> dict = new Dictionary<string, ICollection<string>>();
 
@@ -24,7 +24,7 @@ namespace Ynab_Sms
                 {
                     foreach (Category category in categoryGroup.Categories)
                     {
-                        ICollection<string> phoneNumbersThatCare = budgetItemsConfig.GetPhoneNumbersThatRegisteredForBudgetItem(budgetDetail.Id, categoryGroup.Name, category.Name);
+                        ICollection<string> phoneNumbersThatCare = budgetConfigFile.GetPhoneNumbersThatRegisteredForBudgetItem(budgetDetail.Id, categoryGroup.Name, category.Name);
                         if (phoneNumbersThatCare.Count == 0)
                             continue;
 
