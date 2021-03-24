@@ -1,20 +1,23 @@
 using System;
 
-public static class Runner
+namespace Ynab_Sms
 {
-    public static void Run(string configFilePath)
+    public static class Runner
     {
-        AppConfig appConfig = AppConfig.CreateFromJsonFile(configFilePath);
-        if (appConfig == null)
-            return;
-
-        BudgetItemsConfig budgetConfig = BudgetItemsConfig.CreateFromJson(appConfig.BudgetItemsJsonFile);
-        if (budgetConfig == null)
+        public static void Run(string configFilePath)
         {
-            return;
-        }
+            AppConfig appConfig = AppConfig.CreateFromJsonFile(configFilePath);
+            if (appConfig == null)
+                return;
 
-        Console.WriteLine(String.Format("AppConfig:\n{0}", appConfig.ToJson()));
-        Console.WriteLine(String.Format("BudgetConfig:\n{0}", budgetConfig.ToJson()));
+            BudgetItemsConfig budgetConfig = BudgetItemsConfig.CreateFromJson(appConfig.BudgetItemsJsonFile);
+            if (budgetConfig == null)
+            {
+                return;
+            }
+
+            Console.WriteLine(String.Format("AppConfig:\n{0}", appConfig.ToJson()));
+            Console.WriteLine(String.Format("BudgetConfig:\n{0}", budgetConfig.ToJson()));
+        }
     }
 }
