@@ -19,10 +19,6 @@ namespace Ynab_Sms
             }
 
             IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetConfig.GetBudgetIds());
-            foreach (BudgetDetails budgetDetail in budgetDetails)
-            {
-                Logger.Log("\n" + budgetDetail.ToString(), LoggingLevel.Verbose);
-            }
         }
     }
 }
