@@ -48,11 +48,13 @@ namespace Ynab_Sms
     public class BudgetDetails
     {
         public string Name { get; private set; }
+        public Guid Id { get; set; }
         public ICollection<CategoryGroup> CategoryGroups { get; private set; }
 
-        public BudgetDetails(string name, ICollection<CategoryGroup> categoryGroups)
+        public BudgetDetails(string name, Guid id, ICollection<CategoryGroup> categoryGroups)
         {
             Name = name;
+            Id = id;
             CategoryGroups = categoryGroups;
         }
 
@@ -79,7 +81,7 @@ namespace Ynab_Sms
                 categoryGroups[category.CategoryGroupId].AddCategory(category);
             }
 
-            return new BudgetDetails(modelBudgetDetail.Name, categoryGroups.Values);
+            return new BudgetDetails(modelBudgetDetail.Name, modelBudgetDetail.Id, categoryGroups.Values);
         }
 
         /// <summary>

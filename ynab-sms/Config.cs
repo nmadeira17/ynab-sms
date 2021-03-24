@@ -181,6 +181,25 @@ namespace Ynab_Sms
         }
 
         /// <summary>
+        /// Traverse the configuration file data structures for phone numbers that declared interest in an item
+        /// </summary>
+        public ICollection<string> GetPhoneNumbersThatRegisteredForBudgetItem(Guid budgetId, string categoryGroupName, string categoryName)
+        {
+            IList<string> phoneNumbersThatCare = new List<string>();
+
+            foreach (EntryConfig entryConfig in Entries)
+            {
+                string phoneNumber = entryConfig.GetPhoneNumberIfRegisteredForBudgetItem(budgetId, categoryGroupName, categoryName);
+                if (phoneNumber == null)
+                    continue;
+                
+                phoneNumbersThatCare.Add(phoneNumber);
+            }
+
+            return phoneNumbersThatCare;
+        }
+
+        /// <summary>
         /// Write the object to a JSON string
         /// </summary>
         public string ToJson(bool prettyPrint = false)
@@ -227,6 +246,17 @@ namespace Ynab_Sms
         [JsonPropertyName("budgets")]
         public IList<BudgetConfig> Budgets { get; set; }
 
+        public string GetPhoneNumberIfRegisteredForBudgetItem(Guid budgetId, string categoryGroupName, string categoryName)
+        {
+            foreach (BudgetConfig budgetConfig in Budgets)
+            {
+                if (budgetConfig.ContainsEntry(budgetId, categoryGroupName, categoryName))
+                    return PhoneNumber;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Is this object a structurall valid object
         /// </summary>
@@ -266,6 +296,20 @@ namespace Ynab_Sms
         [JsonPropertyName("budget_items")]
         public IList<BudgetItemConfig> BudgetItems { get; set; }
 
+        public bool ContainsEntry(Guid budgetId, string categoryGroupName, string categoryName)
+        {
+            if (budgetId.ToString() != Id)
+                return false;
+
+            foreach (BudgetItemConfig budgetItemConfig in BudgetItems)
+            {
+                if (budgetItemConfig.IsEqual(categoryGroupName, categoryName))
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Is this object a structurall valid object
         /// </summary>
@@ -304,6 +348,14 @@ namespace Ynab_Sms
 
         [JsonPropertyName("line_item")]
         public string LineItem { get; set; }
+
+        public bool IsEqual(string categoryGroupName, string categoryName)
+        {
+            if (categoryGroupName == Category && categoryName == LineItem)
+                return true;
+
+            return false;
+        } 
 
         /// <summary>
         /// Is this object a structurall valid object
