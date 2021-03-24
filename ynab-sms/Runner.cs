@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+
+using Ynab_Sms.Logging;
 
 namespace Ynab_Sms
 {
@@ -21,7 +21,7 @@ namespace Ynab_Sms
             IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetConfig.GetBudgetIds());
             foreach (BudgetDetails budgetDetail in budgetDetails)
             {
-                Console.WriteLine("\n" + budgetDetail.ToString());
+                Logger.Log("\n" + budgetDetail.ToString(), LoggingLevel.Verbose);
             }
         }
     }

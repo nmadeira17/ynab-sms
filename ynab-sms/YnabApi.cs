@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Ynab_Sms.Logging;
+
 namespace Ynab_Sms
 {
     /// <summary>
@@ -21,14 +23,18 @@ namespace Ynab_Sms
 
             foreach (string budgetId in budgetIds)
             {
+                Logger.Log(String.Format("Getting details for budget ID {0}...", budgetId), LoggingLevel.Verbose);
+
                 YNAB.SDK.Model.BudgetDetailResponse budgetResponse = ynabApi.Budgets.GetBudgetById(budgetId);
                 if (budgetResponse == null)
                 {
-                    Console.WriteLine(String.Format("Error getting budget details for budget ID [{0}]. Are you sure this is the correct ID?"), budgetId);
+                    Logger.Log(String.Format("Error getting budget details for budget ID [{0}]. Are you sure this is the correct ID?", budgetId));
                     continue;
                 }
 
                 budgetDetails.Add(BudgetDetails.Create(budgetResponse));
+
+                Logger.Log("Done!", LoggingLevel.Verbose);
             }
 
             return budgetDetails;

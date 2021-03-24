@@ -4,6 +4,8 @@ using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
+using Ynab_Sms.Logging;
+
 namespace Ynab_Sms
 {
     /// <summary>
@@ -35,13 +37,15 @@ namespace Ynab_Sms
             string jsonString = "";
             AppConfig appConfig = null;
 
+            Logger.Log("Parsing config file...", LoggingLevel.Verbose);
+
             try
             {
                 jsonString = File.ReadAllText(jsonFile);
             }
             catch(Exception e)
             {
-                Console.WriteLine(String.Format("Failed to read config.json. Error:\n{0}", e));
+                Logger.Log(String.Format("Failed to read config.json. Error:\n{0}", e));
                 return null;
             }
 
@@ -51,16 +55,18 @@ namespace Ynab_Sms
             }
             catch(Exception e)
             {
-                Console.WriteLine(String.Format("Failed to deserialize config.json.\nError: {0}", e));
+                Logger.Log(String.Format("Failed to deserialize config.json.\nError: {0}", e));
                 return null;
             }
 
             string errorMessage = "";
             if (!appConfig.IsValid(out errorMessage))
             {
-                Console.WriteLine(String.Format("config.json is invalid. {0}", errorMessage));
+                Logger.Log(String.Format("config.json is invalid. {0}", errorMessage));
                 return null;
             }
+
+            Logger.Log("Done!", LoggingLevel.Verbose);
 
             return appConfig;
         }
@@ -123,13 +129,15 @@ namespace Ynab_Sms
             string jsonString = "";
             BudgetItemsConfig config = null;
 
+            Logger.Log("Parsing budget_items.json...", LoggingLevel.Verbose);
+
             try
             {
                 jsonString = File.ReadAllText(jsonFile);
             }
             catch(Exception e)
             {
-                Console.WriteLine(String.Format("Failed to read budget_items.json. Error:\n{0}", e));
+                Logger.Log(String.Format("Failed to read budget_items.json. Error:\n{0}", e));
                 return null;
             }
 
@@ -139,16 +147,18 @@ namespace Ynab_Sms
             }
             catch(Exception e)
             {
-                Console.WriteLine(String.Format("Failed to deserialize budget_items.json.\nError: {0}", e));
+                Logger.Log(String.Format("Failed to deserialize budget_items.json.\nError: {0}", e));
                 return null;
             }
 
             string errorMessage = "";
             if (!config.IsValid(out errorMessage))
             {
-                Console.WriteLine(String.Format("budget_items.json is invalid. {0}", errorMessage));
+                Logger.Log(String.Format("budget_items.json is invalid. {0}", errorMessage));
                 return null;
             }
+
+            Logger.Log("Done!", LoggingLevel.Verbose);
 
             return config;
         }

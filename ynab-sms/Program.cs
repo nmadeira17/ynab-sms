@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using CommandLine;
+using Ynab_Sms.Logging;
 
 namespace Ynab_Sms
 {
@@ -12,6 +13,9 @@ namespace Ynab_Sms
     {
         [Value(index: 0, Required = true, HelpText = "Path to config file")]
         public string ConfigFilePath { get; set; }
+
+        [Option('v', "verbose", Required = false, Default = false, HelpText = "Run with verbose console logging")]
+        public bool Verbose { get; set; }
     }
 
     class Program
@@ -31,7 +35,12 @@ namespace Ynab_Sms
         /// </summary>
         static void RunOptions(CommandLineOptions options)
         {
+            if (options.Verbose)
+                Logging.Logger.Level = Logging.LoggingLevel.Verbose;
+
+            Logger.Log("Running YNAB-SMS...");
             Runner.Run(options.ConfigFilePath);
+            Logger.Log("Success!");
         }
 
         /// <summary>
@@ -39,9 +48,9 @@ namespace Ynab_Sms
         /// </summary>
         static void HandleParseError(IEnumerable<Error> errors)
         {
-            Console.WriteLine("Error parsing command line arguments. Errors:\n");
+            Logger.Log("Error parsing command line arguments. Errors:\n");
             foreach (Error e in errors)
-                Console.WriteLine(e.ToString());
+                Logger.Log(e.ToString());
         }
     }
 }
