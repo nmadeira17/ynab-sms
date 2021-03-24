@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/ynab-sms/bin/Debug/net5.0/ynab-sms.dll",
-            "args": [],
+            "args": ["..\\Config\\config.json"],
             "cwd": "${workspaceFolder}/ynab-sms",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",

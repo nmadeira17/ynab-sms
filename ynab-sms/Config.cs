@@ -154,6 +154,23 @@ namespace Ynab_Sms
         }
 
         /// <summary>
+        /// Collect the IDs for the unique budgets specified in the config file
+        /// </summary>
+        public IEnumerable<string> GetBudgetIds()
+        {
+            HashSet<string> budgetIds = new HashSet<string>();
+            foreach (EntryConfig entryConfig in Entries)
+            {
+                foreach (BudgetConfig budgetConfig in entryConfig.Budgets)
+                {
+                    budgetIds.Add(budgetConfig.Id);
+                }
+            }
+
+            return budgetIds;
+        }
+
+        /// <summary>
         /// Write the object to a JSON string
         /// </summary>
         public string ToJson(bool prettyPrint = false)
