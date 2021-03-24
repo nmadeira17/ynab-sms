@@ -95,7 +95,7 @@ namespace Ynab_Sms
                 sb.AppendLine(String.Format("{0} | {1} Categories", group.Name, group.Categories.Count));
 
                 foreach (Category category in group.Categories)
-                    sb.AppendLine(String.Format("\t-{0}", category.Name));
+                    sb.AppendLine(String.Format("\t-{0} | {1}", category.Name, Utils.YnabLongToFormattedString(category.Remaining)));
             }
 
             return sb.ToString();
