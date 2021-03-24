@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-using Ynab_Sms.Logging;
-
 namespace Ynab_Sms
 {
     public static class Runner
     {
-        public static void Run(string configFilePath)
+        public static void Run(CommandLineOptions options)
         {
-            AppConfig appConfig = AppConfig.CreateFromJsonFile(configFilePath);
+            if (options.Verbose)
+                Logging.Logger.Level = Logging.LoggingLevel.Verbose;
+
+            AppConfig appConfig = AppConfig.CreateFromJsonFile(options.ConfigFilePath);
             if (appConfig == null)
                 return;
 
@@ -29,7 +30,9 @@ namespace Ynab_Sms
             {
                 string message = messageContentManager.GetMessageForPhoneNumber(phoneNumber);
                 commandLineMessageSender.Send(phoneNumber, message);
-                smsMessageSender.Send(phoneNumber, message);
+
+                if (options.SendSms)
+                    smsMessageSender.Send(phoneNumber, message);
             }
         }
     }

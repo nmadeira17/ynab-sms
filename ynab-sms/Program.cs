@@ -16,6 +16,9 @@ namespace Ynab_Sms
 
         [Option('v', "verbose", Required = false, Default = false, HelpText = "Run with verbose console logging")]
         public bool Verbose { get; set; }
+
+        [Option('s', "send-sms", Required = false, Default = false, HelpText = "Send SMS messages")]
+        public bool SendSms { get; set; }
     }
 
     class Program
@@ -35,11 +38,8 @@ namespace Ynab_Sms
         /// </summary>
         static void RunOptions(CommandLineOptions options)
         {
-            if (options.Verbose)
-                Logging.Logger.Level = Logging.LoggingLevel.Verbose;
-
             Logger.Log("Running YNAB-SMS...");
-            Runner.Run(options.ConfigFilePath);
+            Runner.Run(options);
             Logger.Log("Success!");
         }
 
