@@ -6,11 +6,17 @@ using Ynab_Sms.Logging;
 
 namespace Ynab_Sms
 {
+    /// <summary>
+    /// Sends a message to a phone number
+    /// </summary>
     public interface IMessageSender
     {
         void Send(string toPhoneNumber, string message);
     }
 
+    /// <summary>
+    /// Will send an SMS message
+    /// </summary>
     public class SmsMessageSender : IMessageSender
     {
         private string m_accountSid;
@@ -24,6 +30,9 @@ namespace Ynab_Sms
             m_fromPhoneNumber = fromPhoneNumber;
         }
 
+        /// <summary>
+        /// Initialize the Twilio Client
+        /// </summary>
         public bool Init()
         {
             try
@@ -38,6 +47,9 @@ namespace Ynab_Sms
             }
         }
 
+        /// <summary>
+        /// Send SMS messages
+        /// </summary>
         public void Send(string toPhoneNumber, string message)
         {
             if (!toPhoneNumber.StartsWith("+1"))
@@ -53,6 +65,9 @@ namespace Ynab_Sms
         }
     }
 
+    /// <summary>
+    /// Thin wrapper around logging to the command line
+    /// </summary>
     public class CommandLineMessegeSender : IMessageSender
     {
         public void Send(string toPhoneNumber, string message)
