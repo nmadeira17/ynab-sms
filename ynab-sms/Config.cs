@@ -29,6 +29,15 @@ namespace Ynab_Sms
         [JsonPropertyName("budget_items_json_file")]
         public string BudgetItemsJsonFile { get; set; }
 
+        [JsonPropertyName("twilio_sid")]
+        public string TwilioSid { get; set; }
+
+        [JsonPropertyName("twilio_auth_token")]
+        public string TwilioAuthToken { get; set; }
+
+        [JsonPropertyName("twilio_phone_number")]
+        public string TwilioPhoneNumber { get; set; }
+
         /// <summary>
         /// Initialize from the path to the app config json file
         /// </summary>
@@ -98,6 +107,24 @@ namespace Ynab_Sms
             if (BudgetItemsJsonFile.Length == 0)
             {
                 errorMessage = "Path to budget items json file must be present.";
+                return false;
+            }
+
+            if (TwilioSid.Length == 0)
+            {
+                errorMessage = "TwilioSid must be present.";
+                return false;
+            }
+
+            if (TwilioAuthToken.Length == 0)
+            {
+                errorMessage = "TwilioAuthToken must be present.";
+                return false;
+            }
+
+            if (TwilioPhoneNumber.Length == 0)
+            {
+                errorMessage = "TwilioPhoneNumber must be present.";
                 return false;
             }
 

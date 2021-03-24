@@ -20,7 +20,18 @@ namespace Ynab_Sms
             IEnumerable<BudgetDetails> budgetDetails = YnabApi.GetBudgets(appConfig.AccessToken, budgetItemsConfig.GetBudgetIds());
             MessageContent messageContent = MessageContent.Create(budgetItemsConfig, budgetDetails);
 
-            Logger.Log(messageContent.ToString());
+            CommandLineMessegeSender commandLineMessageSender = new CommandLineMessegeSender();
+            SmsMessageSender smsMessageSender = new SmsMessageSender(appConfig.TwilioSid, appConfig.TwilioAuthToken, appConfig.TwilioPhoneNumber);
+            if (!smsMessageSender.Init())
+                return;
+
+            foreach (string phoneNumber in messageContent.GetPhoneNumbers())
+            {
+                string message = messageContent.GetMessageForPhoneNumber(phoneNumber);
+
+                commandLineMessageSender.Send(phoneNumber, message);
+                smsMessageSender.Send(phoneNumber, message);
+            }
         }
     }
 }

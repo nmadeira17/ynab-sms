@@ -46,6 +46,26 @@ namespace Ynab_Sms
             return new MessageContent(dict);
         }
 
+        public ICollection<string> GetPhoneNumbers()
+        {
+            return m_dict.Keys;
+        }
+
+        public string GetMessageForPhoneNumber(string phoneNumber)
+        {
+            if (!m_dict.ContainsKey(phoneNumber))
+                return null;
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("YNAB-SMS");
+
+            foreach (string s in m_dict[phoneNumber])
+                sb.AppendLine(String.Format("- {0}", s));
+
+            return sb.ToString();
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
