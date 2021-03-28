@@ -36,8 +36,9 @@ namespace Ynab_Sms
                             continue;
 
                         string catName = categoryGroup.Name + " | " + category.Name;
+                        string budgeted = Utils.YnabLongToFormattedString(category.Budgeted);
                         string balance = Utils.YnabLongToFormattedString(category.Balance);
-                        string entry = String.Format("{0}: {1}", catName, balance);
+                        string entry = String.Format("{0}: Budgeted: {1}, Balance: {2}", catName, budgeted, balance);
 
                         foreach (string phoneNumber in phoneNumbersThatCare)
                         {
